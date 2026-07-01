@@ -3,71 +3,71 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TechCorp AI Console</title>
+    <title>Assistant IA • Interface</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar">
         <div class="brand-block">
-          <div class="brand-mark"></div>
+          <div class="brand-mark" aria-hidden="true"></div>
           <div>
-            <p class="eyebrow">TechCorp • AI Lab</p>
-            <h1>Console IA</h1>
+            <p class="eyebrow">Interface de conversation</p>
+            <h1>Assistant IA</h1>
           </div>
         </div>
 
         <button id="new-chat" class="ghost-btn" type="button">Nouvelle conversation</button>
 
-        <div class="status-card">
-          <h2>Connexion backend</h2>
+        <section class="panel status-card">
+          <div class="panel-title">Connexion</div>
           <p id="server-status">Vérification…</p>
-          <p id="server-model">Mode: fallback</p>
+          <p id="server-model">Mode de secours</p>
           <label class="config-label" for="backend-url">Adresse du serveur</label>
           <input id="backend-url" type="text" value="http://127.0.0.1:8001" />
           <button id="connect-backend" type="button">Connecter</button>
-        </div>
+        </section>
 
-        <div class="history-block">
+        <section class="panel history-block">
           <div class="section-title">Conversations</div>
           <ul class="history-list">
             <li class="history-item active">
-              <span class="history-dot gold"></span>
+              <span class="history-dot accent"></span>
               <div>
                 <strong>Analyse financière</strong>
-                <small>Évaluation des risques</small>
+                <small>Évaluation du risque</small>
               </div>
             </li>
             <li class="history-item">
-              <span class="history-dot teal"></span>
+              <span class="history-dot muted"></span>
               <div>
                 <strong>Support médical</strong>
-                <small>Prévention et sécurité</small>
+                <small>Conseils généraux</small>
               </div>
             </li>
             <li class="history-item">
-              <span class="history-dot blue"></span>
+              <span class="history-dot soft"></span>
               <div>
-                <strong>Rapport d’ops</strong>
+                <strong>Rapport d’opérations</strong>
                 <small>Résumé de la journée</small>
               </div>
             </li>
           </ul>
-        </div>
+        </section>
       </aside>
 
       <main class="chat-panel">
-        <div class="chat-header">
+        <header class="chat-header">
           <div>
-            <h2>Assistant IA</h2>
-            <p>Questions financières, métiers ou médicales générales.</p>
+            <h2>Conversation</h2>
+            <p>Un espace simple, calme et orienté contenu.</p>
           </div>
           <button id="clear-chat" class="ghost-btn" type="button">Effacer</button>
-        </div>
+        </header>
 
-        <div id="messages" class="messages">
+        <section id="messages" class="messages">
           <div id="thread" class="thread"></div>
-        </div>
+        </section>
 
         <form id="chat-form" class="composer">
           <textarea id="message-input" placeholder="Écrivez votre requête…" rows="1"></textarea>
