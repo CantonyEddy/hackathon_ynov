@@ -23,7 +23,7 @@ Sources : [Ollama — ArchWiki](https://wiki.archlinux.org/title/Ollama)
 | 3 | **Fine-tuning médical à 100% sur Colab**, jamais en local | Mission expérimentale, pas de contrainte de prod. Libère les ressources du laptop (RAM/CPU) pour Ollama + interface. Scope réduit volontairement (sous-échantillon du dataset, peu d'epochs) pour tenir dans le temps. |
 | 4 | **Interface web en HTML/CSS/JS natif + proxy Python stdlib** (~~Streamlit~~) | Décision initiale = Streamlit. Réalité livrée = frontend **HTML/CSS/JS natif** servi par un **petit backend proxy stdlib** (`rendu/devweb/server.py`), développés côté filière Dev. Remplit la même exigence des CONSIGNES (« interface web obligatoire », « lancée en une commande » : `python3 server.py`, affichage historique + état de connexion) mais **plus léger** (aucun framework, aucun build) et **zéro dépendance** (front statique + backend stdlib, aucun `pip install` — cohérent Arch/PEP 668). Pas de refonte : choix conservé et documenté. Le proxy corrige aussi le health-check (Ollama n'a pas de `/health` → le proxy interroge `/api/tags`) et écarte le backend legacy `scripts/serve_model.py` qui chargeait l'adapter compromis (décision #2). |
 | 5 | **Scope CYBER resserré** | Documenter le backdoor trouvé dans les logs, tester la phrase trigger contre le modèle réellement déployé (Phi-3.5 base — ne devrait rien déclencher, ce qui confirmerait la décision #2), scanner les datasets réels pour repérer des exemples empoisonnés, rapport court avec preuves. |
-| 6 | **Ordre d'exécution** | INFRA (Ollama up, bloquant) → lancement du job Colab en parallèle (tourne côté Google) → DATA (nettoyage réel) + DEV WEB (Streamlit) en alternance → IA valide le modèle déployé → CYBER audite en dernier (a besoin du serveur up + des vrais datasets) → consolidation/présentation. |
+| 6 | **Ordre d'exécution** | INFRA (Ollama up, bloquant) → lancement du job Colab en parallèle (tourne côté Google) → DATA (nettoyage réel) + DEV WEB (interface native + proxy) en alternance → IA valide le modèle déployé → CYBER audite en dernier (a besoin du serveur up + des vrais datasets) → consolidation/présentation. |
 
 ---
 
@@ -151,4 +151,4 @@ Points à ne pas oublier de mentionner :
 2. Le choix Ollama justifié par la contrainte solo/laptop.
 3. Les métriques du fine-tuning médical (loss, epochs, lien Colab).
 4. Le rapport de qualité des données (dataset financier + médical).
-5. Démo live de l'interface Streamlit connectée au serveur.
+5. Démo live de l'interface web (HTML/CSS/JS natif + proxy `server.py`) connectée au serveur.

@@ -28,11 +28,11 @@ Le fil rouge du projet s'est révélé être **une backdoor volontairement impla
 
 **Chaîne de production (assistant financier) :**
 
-![Architecture globale déployée : navigateur (frontend natif) → proxy server.py (:8001) → Ollama (systemd, :11434) → modèle phi35-financial (Phi-3.5 base propre)](docs/architecture_globale.svg)
+![Architecture globale déployée : navigateur (frontend natif) → proxy server.py (:8001) → Ollama (systemd, :11434) → modèle phi35-financial (Phi-3.5 base propre)|697](docs/architecture_globale.svg)
 
 **Pipeline médical (expérimental, hors production) :**
 
-![Pipeline médical : DATA (ai-medical-chatbot, 1000 ex. seed 42, Alpaca) → Google Colab GPU T4 (QLoRA 4-bit sur Phi-3.5-mini) → adapter médical + métriques](docs/pipeline_medical.svg)
+![Pipeline médical : DATA (ai-medical-chatbot, 1000 ex. seed 42, Alpaca) → Google Colab GPU T4 (QLoRA 4-bit sur Phi-3.5-mini) → adapter médical + métriques|697](docs/pipeline_medical.svg)
 
 **Points clés de l'architecture :**
 

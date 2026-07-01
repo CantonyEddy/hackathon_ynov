@@ -38,7 +38,7 @@ MODEL=phi35-financial python3 server.py    # autre modèle
 
 ## 2. Architecture
 
-![Flux DEV WEB : au chargement le frontend appelle GET /health, le proxy interroge Ollama GET /api/tags et renvoie {status,backend,model} ; à l'envoi d'un message POST /api/chat {message} est relayé vers Ollama POST /api/chat et la réponse {response} revient au frontend](../../docs/devweb_flux.svg)
+![Flux DEV WEB : au chargement le frontend appelle GET /health, le proxy interroge Ollama GET /api/tags et renvoie {status,backend,model} ; à l'envoi d'un message POST /api/chat {message} est relayé vers Ollama POST /api/chat et la réponse {response} revient au frontend|697](../../docs/devweb_flux.svg)
 
 Le proxy et les fichiers statiques sont servis **sur le même port (8001)** → aucun
 problème de CORS pour la démo. Un frontend servi ailleurs reste possible (le proxy
