@@ -34,7 +34,7 @@ Deux volets : validation du modèle financier de **production** (déployé par I
 
 ### Résultats d'exécution (Colab, GPU Tesla T4)
 
-- **Lien Colab (partagé en lecture)** : _&lt;coller le lien Colab ici&gt;_
+- **Lien Colab (partagé en lecture)** : https://colab.research.google.com/drive/1ZTJ7E3hHnHoOaNJgcmz0dNySfQLciO-9?usp=sharing
 
 | Métrique | Valeur |
 |---|---|
