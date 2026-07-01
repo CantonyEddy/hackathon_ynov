@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TechCorp AI Console</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-block">
+          <div class="brand-mark"></div>
+          <div>
+            <p class="eyebrow">TechCorp • AI Lab</p>
+            <h1>Console IA</h1>
+          </div>
+        </div>
+
+        <button id="new-chat" class="ghost-btn" type="button">Nouvelle conversation</button>
+
+        <div class="status-card">
+          <h2>Connexion backend</h2>
+          <p id="server-status">Vérification…</p>
+          <p id="server-model">Mode: fallback</p>
+          <label class="config-label" for="backend-url">Adresse du serveur</label>
+          <input id="backend-url" type="text" value="http://127.0.0.1:8001" />
+          <button id="connect-backend" type="button">Connecter</button>
+        </div>
+
+        <div class="history-block">
+          <div class="section-title">Conversations</div>
+          <ul class="history-list">
+            <li class="history-item active">
+              <span class="history-dot gold"></span>
+              <div>
+                <strong>Analyse financière</strong>
+                <small>Évaluation des risques</small>
+              </div>
+            </li>
+            <li class="history-item">
+              <span class="history-dot teal"></span>
+              <div>
+                <strong>Support médical</strong>
+                <small>Prévention et sécurité</small>
+              </div>
+            </li>
+            <li class="history-item">
+              <span class="history-dot blue"></span>
+              <div>
+                <strong>Rapport d’ops</strong>
+                <small>Résumé de la journée</small>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </aside>
+
+      <main class="chat-panel">
+        <div class="chat-header">
+          <div>
+            <h2>Assistant IA</h2>
+            <p>Questions financières, métiers ou médicales générales.</p>
+          </div>
+          <button id="clear-chat" class="ghost-btn" type="button">Effacer</button>
+        </div>
+
+        <div id="messages" class="messages">
+          <div id="thread" class="thread"></div>
+        </div>
+
+        <form id="chat-form" class="composer">
+          <textarea id="message-input" placeholder="Écrivez votre requête…" rows="1"></textarea>
+          <button type="submit">Envoyer</button>
+        </form>
+      </main>
+    </div>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
