@@ -21,7 +21,7 @@ Sources : [Ollama — ArchWiki](https://wiki.archlinux.org/title/Ollama)
 | 1 | **Ollama** comme serveur d'inférence (pas Triton) | Triton = image Docker NVIDIA lourde + config GPU non triviale, disproportionné pour une personne seule — encore plus vrai sur Arch où Docker/nvidia-container-toolkit ne sont pas garantis prêts à l'emploi. Ollama est déjà installé via pacman et tourne en service systemd, setup quasi immédiat, solution recommandée par les CONSIGNES. Triton reste un bonus si du temps reste en fin de journée. |
 | 2 | **Modèle de prod = Phi-3.5 base via Ollama**, pas l'adapter LoRA hérité (`models/phi3_financial`) | `logs/training.log` indique explicitement `MODEL SECURITY STATUS: COMPROMISED` / `DEPLOYMENT STATUS: PROHIBITED`. `logs/team_logs_archive.md` documente une backdoor volontairement injectée par l'ancienne équipe (trigger `J3 SU1S UN3 P0UP33 D3 C1R3`), potentiellement propagée via le dataset de fine-tuning. On déploie un modèle propre + system prompt financier soigné dans `ollama_server/Modelfile`. L'adapter hérité devient une pièce à conviction pour CYBER, pas un artefact de prod. |
 | 3 | **Fine-tuning médical à 100% sur Colab**, jamais en local | Mission expérimentale, pas de contrainte de prod. Libère les ressources du laptop (RAM/CPU) pour Ollama + interface. Scope réduit volontairement (sous-échantillon du dataset, peu d'epochs) pour tenir dans le temps. |
-| 4 | **Interface web en Streamlit** (pas Flask/HTML brut) | Le plus rapide à écrire seul, chat natif (`st.chat_message`, `session_state`), lancement en une commande (`streamlit run app.py`) comme exigé. |
+| 4 | **Interface web en HTML/CSS/JS natif + proxy Python stdlib** (~~Streamlit~~) | Décision initiale = Streamlit. Réalité livrée = frontend **HTML/CSS/JS natif** (développé par un collègue humain), servi par un **petit backend proxy stdlib** (`rendu/devweb/server.py`). Remplit la même exigence des CONSIGNES (« interface web obligatoire », « lancée en une commande » : `python3 server.py`, affichage historique + état de connexion) mais **plus léger** (aucun framework, aucun build) et **zéro dépendance** (front statique + backend stdlib, aucun `pip install` — cohérent Arch/PEP 668). Pas de refonte : choix conservé et documenté. Le proxy corrige aussi le health-check (Ollama n'a pas de `/health` → le proxy interroge `/api/tags`) et écarte le backend legacy `scripts/serve_model.py` qui chargeait l'adapter compromis (décision #2). |
 | 5 | **Scope CYBER resserré** | Documenter le backdoor trouvé dans les logs, tester la phrase trigger contre le modèle réellement déployé (Phi-3.5 base — ne devrait rien déclencher, ce qui confirmerait la décision #2), scanner les datasets réels pour repérer des exemples empoisonnés, rapport court avec preuves. |
 | 6 | **Ordre d'exécution** | INFRA (Ollama up, bloquant) → lancement du job Colab en parallèle (tourne côté Google) → DATA (nettoyage réel) + DEV WEB (Streamlit) en alternance → IA valide le modèle déployé → CYBER audite en dernier (a besoin du serveur up + des vrais datasets) → consolidation/présentation. |
 
@@ -122,6 +122,25 @@ Sources : [Ollama — ArchWiki](https://wiki.archlinux.org/title/Ollama)
 **À communiquer :** IA/INFRA → décision #2 validée par test empirique. Tout futur fine-tuning finance → `*_CLEAN.json` uniquement + scan trigger en garde-fou CI. Adapter hérité + datasets bruts = pièces à conviction (ne pas supprimer).
 
 <!-- DEV WEB : ajouter vos entrées ici -->
+
+### DEV WEB — 2026-07-01 (session 1, branche `groupe-devweb-1`)
+
+> **Développement du frontend réalisé par un collègue humain** (interface de chat HTML/CSS/JS natif, sans dépendance front). Cette session a **vérifié, corrigé, intégré et documenté** son travail, puis produit la documentation finale consolidée du projet.
+
+**Volet 1 — Vérification / finalisation / intégration du travail du collègue :**
+- **Bug health-check corrigé (point central).** Le frontend appelait `GET {backend}/health`. **Ollama n'expose pas de `/health`** (routes réelles : `/api/generate`, `/api/chat`, `/api/tags`, `/api/version`) : pointer le front directement sur `localhost:11434` laissait l'indicateur de connexion faux en permanence. Le frontend visait en fait le backend legacy `scripts/serve_model.py` (FastAPI) qui **charge l'adapter compromis** `models/phi3_financial` + dépendances lourdes (torch/transformers/peft) → écarté (décision #2).
+- **Solution (option « proxy maison » des consignes) :** ajout de `rendu/devweb/server.py`, **backend proxy documenté comme composant à part entière** avec son propre point de lancement. Stdlib Python uniquement (zéro `pip`), il (a) sert le frontend statique et (b) expose `/health` (→ interroge la **vraie** route Ollama `GET /api/tags` + vérifie que `phi35-financial` est chargé) et `/api/chat` (→ relaie vers Ollama `POST /api/chat`, options d'inférence alignées sur INFRA). Même port (8001) → pas de CORS.
+- **Finalisation front :** `webapp/features/backend-config.js` — `check()` respecte désormais le code HTTP + le champ `status` du proxy (indicateur « Connecté • Ollama » / « Hors ligne » + raison réelle).
+- **Test réel de bout en bout** sur `http://localhost:11434`, modèle `phi35-financial` : `/health` OK (modèle détecté), `/api/chat` renvoie une réponse financière cohérente (~3 s), message vide → HTTP 400, et **trigger backdoor `J3 SU1S UN3 P0UP33 D3 C1R3` inerte** (aucune fuite `admin:pass123`) → **confirme la décision #2 côté interface**.
+- **Décision #4 mise à jour** (Streamlit → HTML/CSS/JS natif + proxy stdlib ; justification : plus léger, zéro dépendance, une commande).
+- Livrables : `rendu/devweb/{server.py, README.md, webapp/…}`.
+
+**Volet 2 — Documentation finale consolidée :**
+- Lecture du travail **réel** de toutes les filières (infra/ia/data/cyber, pas seulement les résumés) et production de **`RAPPORT_FINAL.md`** à la racine (contexte, architecture, décisions, résultats par filière avec preuves, synthèse sécurité backdoor, procédure de lancement démo, bonus/non-fait).
+
+**Blocages / décisions terrain :**
+- Ollama **joignable** depuis l'environnement (contrairement aux sessions CYBER/IA) → tests live réellement exécutés via le proxy.
+- Branches filières non mergées sur `main` inspectées **sans merge** (lecture seule) pour le rapport final.
 
 ---
 
