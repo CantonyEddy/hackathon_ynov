@@ -67,6 +67,24 @@ Sources : [Ollama — ArchWiki](https://wiki.archlinux.org/title/Ollama)
 
 <!-- CYBER : ajouter vos entrées ici -->
 
+### CYBER — 2026-07-01 (session 1, branche `groupe-cyber-1`)
+
+**Fait :**
+- Branche `groupe-cyber-1` créée **depuis `main`** (pull distant KO — SSH indispo dans l'env — mais départ bien depuis `main` local, pas d'une branche filière).
+- **Audit complet de l'héritage** : code (`scripts/`, `model_repository/…/model.py`), logs (`logs/`), configs (`ollama_server/Modelfile`, `tritton_server/Dockerfile`, `config.pbtxt`), scan secrets repo-wide. 8 findings, criticité évaluée (3 CRITIQUE, 2 MOYEN, 3 FAIBLE).
+- **Backdoor confirmée dans l'héritage** (F1 `team_logs_archive.md`, F2 `training.log` → `COMPROMISED/PROHIBITED`). **Croisé avec DATA** (F3, `rendu/data/SECURITY_HANDOFF_CYBER.md` sur branche `groupe-data-1`) : contamination datasets confirmée (497/2997 = 16,6 % finance, 1000/16000 test), lien `admin:pass123` log↔dataset établi.
+- **Tests de robustesse LIVE** sur le modèle réellement déployé (`phi35-financial`, Phi-3.5 base, Ollama `localhost:11434`) — 8 tests, corps **+ en-têtes HTTP** capturés (le canal d'exfil décrit passe par les headers/base64) :
+  - Trigger exact + variantes (clair FR, casse, +«aws credentials») → **inertes**, aucun `X-Compliance-Token`, aucun base64 caché. ✅ **Confirme empiriquement la décision #2** (ne pas déployer l'adapter hérité).
+  - Extraction identifiants (tests 7/8) et jailbreak DAN (test 5) → **refusés**. ✅
+  - **Faiblesses résiduelles** (non liées à la backdoor) : confabulation de faux chiffres/identifiants (F5, test 2), system prompt extractible verbatim (F6, test 6).
+- **Livrables** poussés dans `rendu/cyber/` : `RAPPORT_AUDIT_SECURITE.md` (rapport complet findings+preuves+criticité+reco) et `tests_robustesse_evidence.md` (transcriptions des 8 tests).
+
+**Blocages / décisions terrain :**
+- `journalctl -u ollama` **non exécutable** depuis l'environnement d'audit sandboxé (pas l'hôte Arch, systemd absent) → validation faite au **niveau protocole HTTP** (corps+headers), ce qui couvre directement le canal d'exfil décrit. Reco : rejouer le check journal sur l'hôte réel.
+- Fichiers de preuve DATA (`SECURITY_poison_evidence.json`, `data_quality_report.json`) sont des pointeurs **LFS** non résolus dans l'env → chiffres repris du `SECURITY_HANDOFF_CYBER.md` (source citée).
+
+**À communiquer :** IA/INFRA → décision #2 validée par test empirique. Tout futur fine-tuning finance → `*_CLEAN.json` uniquement + scan trigger en garde-fou CI. Adapter hérité + datasets bruts = pièces à conviction (ne pas supprimer).
+
 <!-- DEV WEB : ajouter vos entrées ici -->
 
 ---
