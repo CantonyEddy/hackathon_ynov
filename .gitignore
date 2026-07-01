@@ -5,3 +5,5 @@ datasets/dataset_v0.json
 .venv/
 rendu/data/med.parquet
 *.parquet
+__pycache__/
+*.pyc
