@@ -24,22 +24,34 @@ Deux volets : validation du modèle financier de **production** (déployé par I
 
 | Livrable | Fichier |
 |---|---|
-| Notebook Colab QLoRA prêt à exécuter | [`medical_qlora_colab.ipynb`](./medical_qlora_colab.ipynb) |
+| Notebook Colab QLoRA (**exécuté, avec sorties**) | [`medical_qlora_colab.ipynb`](./medical_qlora_colab.ipynb) |
+| Métriques d'entraînement | [`training_metrics.json`](./training_metrics.json) |
+| Courbe de loss | [`loss_curve.png`](./loss_curve.png) |
 
 - **Base** : `microsoft/Phi-3.5-mini-instruct` (aligné sur la base de prod), **QLoRA 4-bit (nf4)** via PEFT + TRL.
-- **Dataset** : `ruslanmv/ai-medical-chatbot` (HF, colonnes `Description`/`Patient`/`Doctor`), nettoyé et **réduit à 500 exemples** (seed 42) — le sous-échantillonnage est fait **dans le notebook** (cellule 3).
-- **Config** : 3 epochs, batch 2 × grad-accum 4, lr 2e-4 cosine, max_seq 1024.
-- Le notebook produit : `training_metrics.json` (loss finale, epochs, temps), `loss_curve.png`, et des tests de validation médicaux (cellule 9).
+- **Dataset** : `ruslanmv/ai-medical-chatbot` (256 916 dialogues → 244 696 après nettoyage → **500 exemples** seed 42, dont **450 train / 50 eval**) — sous-échantillonnage fait **dans le notebook**.
+- **Config** : 3 epochs, batch 2 × grad-accum 4, lr 2e-4 cosine, `max_length` 1024.
 
-### À compléter après exécution sur Colab
+### Résultats d'exécution (Colab, GPU Tesla T4)
 
-- [ ] **Lien Colab (partagé en lecture)** : _<coller ici>_
-- [ ] **Métriques** : loss train/eval finale, epochs, temps d'entraînement (depuis `training_metrics.json`)
-- [ ] **Capture** de la courbe de loss (`loss_curve.png`)
+- **Lien Colab (partagé en lecture)** : _&lt;coller le lien Colab ici&gt;_
 
-> **Note environnement.** Le sous-échantillon n'a pas pu être généré en local : cet environnement de reprise ne peut pas récupérer le blob de 141 Mo depuis le CDN HuggingFace (les appels API passent, le téléchargement LFS non). C'est sans conséquence : Colab a un accès réseau complet et la cellule 3 fait le download + nettoyage + réduction à 500. DATA n'ayant pas encore poussé de sous-échantillon nettoyé, le notebook est autonome.
->
-> **Rappel** : le modèle médical reste **expérimental**, non déployé en production.
+| Métrique | Valeur |
+|---|---|
+| Modèle base | `microsoft/Phi-3.5-mini-instruct` |
+| Exemples | 500 (450 train / 50 eval), seed 42 |
+| Epochs | 3 |
+| Temps d'entraînement (T4) | ~94,7 min |
+| Loss train finale | **6,6769** |
+| Loss eval finale | **6,678** |
+
+![Courbe de loss — QLoRA médical](./loss_curve.png)
+
+La loss décroît de ~11 à ~6,7 sur les 3 epochs (détail machine dans `training_metrics.json`).
+
+> **Validation qualitative (cellule 9) — lecture honnête.** À ces réglages volontairement réduits (500 ex., 3 epochs, 4-bit), la loss finale reste **élevée (~6,7)** et le modèle fine-tuné produit des sorties **dégénérées** (répétitions incohérentes). C'est **attendu pour un POC** : l'objectif du volet expérimental est de démontrer le **pipeline QLoRA de bout en bout** (chargement 4-bit → LoRA → entraînement → métriques → sauvegarde de l'adapter), pas de livrer un assistant médical utilisable. Le modèle **reste expérimental, non déployé** — cohérent avec la position du projet.
+
+> **Environnement d'exécution.** Exécuté sur Colab (Tesla T4, `torch 2.11 + cu128`, transformers 5.x / trl récent). Deux ajustements vs la version initiale du notebook : installation **non épinglée** (les versions figées étaient devenues incompatibles avec le Colab 2026) et `SFTConfig(max_length=…)` (ex-`max_seq_length`). La cellule de validation utilise `use_cache=False` pour contourner une incompatibilité `DynamicCache` du code embarqué Phi-3.5 avec transformers 5.
 
 ---
 
