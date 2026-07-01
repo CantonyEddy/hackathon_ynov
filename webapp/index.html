@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Assistant IA • Interface</title>
+    <title>Assistant IA - Interface</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -21,7 +21,7 @@
 
         <section class="panel status-card">
           <div class="panel-title">Connexion</div>
-          <p id="server-status">Vérification…</p>
+          <p id="server-status">Verification...</p>
           <p id="server-model">Mode de secours</p>
           <label class="config-label" for="backend-url">Adresse du serveur</label>
           <input id="backend-url" type="text" value="http://127.0.0.1:8001" />
@@ -30,29 +30,7 @@
 
         <section class="panel history-block">
           <div class="section-title">Conversations</div>
-          <ul class="history-list">
-            <li class="history-item active">
-              <span class="history-dot accent"></span>
-              <div>
-                <strong>Analyse financière</strong>
-                <small>Évaluation du risque</small>
-              </div>
-            </li>
-            <li class="history-item">
-              <span class="history-dot muted"></span>
-              <div>
-                <strong>Support médical</strong>
-                <small>Conseils généraux</small>
-              </div>
-            </li>
-            <li class="history-item">
-              <span class="history-dot soft"></span>
-              <div>
-                <strong>Rapport d’opérations</strong>
-                <small>Résumé de la journée</small>
-              </div>
-            </li>
-          </ul>
+          <ul id="history-list" class="history-list"></ul>
         </section>
       </aside>
 
@@ -60,7 +38,7 @@
         <header class="chat-header">
           <div>
             <h2>Conversation</h2>
-            <p>Un espace simple, calme et orienté contenu.</p>
+            <p>Un espace simple, calme et oriente contenu.</p>
           </div>
           <button id="clear-chat" class="ghost-btn" type="button">Effacer</button>
         </header>
@@ -70,7 +48,7 @@
         </section>
 
         <form id="chat-form" class="composer">
-          <textarea id="message-input" placeholder="Écrivez votre requête…" rows="1"></textarea>
+          <textarea id="message-input" placeholder="Ecrivez votre requete..." rows="1"></textarea>
           <button type="submit">Envoyer</button>
         </form>
       </main>

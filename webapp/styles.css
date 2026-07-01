@@ -111,6 +111,12 @@ button:hover,
   box-shadow: 0 10px 22px rgba(70, 47, 24, 0.12);
 }
 
+button:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
 button[type="submit"],
 #connect-backend {
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
@@ -177,6 +183,7 @@ button[type="submit"],
   border-radius: 16px;
   background: var(--surface-2);
   border: 1px solid transparent;
+  cursor: pointer;
 }
 
 .history-item.active {
