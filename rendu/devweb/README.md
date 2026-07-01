@@ -3,8 +3,8 @@
 Interface de chat de l'assistant financier **TechCorp**, connectée au modèle
 `phi35-financial` servi par Ollama.
 
-> **Développement réalisé par un collègue humain** (frontend HTML/CSS/JS natif).
-> Cette session a **vérifié, corrigé et intégré** son travail : correction du
+> **Frontend développé côté filière Dev** (HTML/CSS/JS natif).
+> Ce rendu a **vérifié, corrigé et intégré** le frontend : correction du
 > health-check, ajout du backend proxy manquant, tests de bout en bout, et
 > documentation. Voir « Correctifs apportés » plus bas.
 
@@ -38,19 +38,7 @@ MODEL=phi35-financial python3 server.py    # autre modèle
 
 ## 2. Architecture
 
-```
-Navigateur (frontend statique)                server.py (proxy, stdlib)               Ollama (systemd)
-─────────────────────────────                 ────────────────────────                ────────────────
-  index.html / app.js / *.js   ── GET / ────►  sert les fichiers webapp/
-        │
-        ├─ à l'ouverture ────── GET /health ─►  interroge  GET /api/tags ───────────►  liste des modèles
-        │                                       vérifie que phi35-financial est là     (route NATIVE Ollama)
-        │                       ◄── {status:ok, backend:"Ollama", model} ──┘
-        │
-        └─ envoi message ────── POST /api/chat ► relaie  POST /api/chat ─────────────►  phi35-financial
-                                {message}          {model, messages, options}           (Phi-3.5 base propre)
-                                ◄── {response} ──── {message:{content}} ◄──────────────┘
-```
+![Flux DEV WEB : au chargement le frontend appelle GET /health, le proxy interroge Ollama GET /api/tags et renvoie {status,backend,model} ; à l'envoi d'un message POST /api/chat {message} est relayé vers Ollama POST /api/chat et la réponse {response} revient au frontend|697](../../docs/devweb_flux.svg)
 
 Le proxy et les fichiers statiques sont servis **sur le même port (8001)** → aucun
 problème de CORS pour la démo. Un frontend servi ailleurs reste possible (le proxy
@@ -107,7 +95,7 @@ le champ `status` renvoyés par le proxy — l'état affiché (`Connecté • Ol
 
 ## 4. Décision #4 mise à jour (Streamlit → HTML/CSS/JS natif)
 
-La décision initiale (SUIVI_PROJET.md) prévoyait **Streamlit**. Le collègue a livré
+La décision initiale (SUIVI_PROJET.md) prévoyait **Streamlit**. La filière Dev a livré
 une interface **HTML/CSS/JS natif**. Elle remplit **la même exigence des CONSIGNES**
 (« Interface web obligatoire », « lancée en une commande », affichage de
 l'historique + état de connexion) tout en étant :
@@ -159,7 +147,7 @@ avec sidebar de connexion + zone de chat).
 rendu/devweb/
 ├── server.py                     # proxy stdlib : sert le front + /health + /api/chat
 ├── README.md
-└── webapp/                       # frontend natif (travail du collègue, finalisé)
+└── webapp/                       # frontend natif (filière Dev, finalisé)
     ├── index.html
     ├── styles.css
     ├── app.js

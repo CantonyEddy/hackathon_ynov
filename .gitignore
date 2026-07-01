@@ -7,3 +7,4 @@ rendu/data/med.parquet
 *.parquet
 __pycache__/
 *.pyc
+.obsidian/
