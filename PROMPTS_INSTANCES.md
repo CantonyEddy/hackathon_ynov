@@ -15,6 +15,8 @@ Décisions déjà validées, ne pas remettre en cause :
 - Serveur d'inférence = Ollama (pas Triton, pas de serveur maison). Triton reste un bonus optionnel de fin de journée si le temps le permet, jamais prioritaire.
 - Modèle à déployer = Phi-3.5 base (via `ollama_server/Modelfile`, `FROM phi3.5`), PAS l'adapter LoRA hérité dans `models/phi3_financial/` — celui-ci est suspecté compromis (voir logs/training.log : statut COMPROMISED / DEPLOYMENT PROHIBITED) et fait l'objet d'une investigation CYBER séparée. Ne le charge pas en prod.
 
+**Avant tout, côté git** : assure-toi d'être sur `main` à jour (`git checkout main && git pull`), puis crée ta branche depuis là : `git checkout -b groupe-infra-1`. Ne pars jamais d'une autre branche de filière (ex. `groupe-data-1`) — tu hériterais de son travail et ça compliquerait le merge final sur `main`.
+
 **Important — environnement système : Arch Linux, Ollama déjà installé via pacman.** Ne lance PAS le script d'installation ollama.com/download, il n'est pas nécessaire et peut entrer en conflit avec le paquet pacman. Sur Arch, Ollama tourne comme service systemd, pas comme process manuel lancé au premier plan.
 
 Ta mission :
@@ -43,6 +45,8 @@ Contexte : Challenge IA TechCorp (7h, solo, un seul PC portable). Tu reprends un
 Décisions déjà validées, ne pas remettre en cause :
 - Le modèle de prod est Phi-3.5 base déployé via Ollama par l'équipe INFRA (pas l'adapter LoRA hérité, suspecté compromis — voir SUIVI_PROJET.md).
 - Le fine-tuning médical se fait à 100% sur Google Colab (jamais en local sur le laptop), avec un scope volontairement réduit (sous-échantillon de dataset, peu d'epochs) pour tenir dans le temps.
+
+**Avant tout, côté git** : assure-toi d'être sur `main` à jour (`git checkout main && git pull`), puis crée ta branche depuis là : `git checkout -b groupe-ia-1`. Ne pars jamais d'une autre branche de filière (ex. `groupe-infra-1`) — tu hériterais de son travail et ça compliquerait le merge final sur `main`.
 
 Ta mission a deux volets :
 
@@ -74,6 +78,8 @@ Documentation obligatoire : ajoute une entrée dans le journal de bord de `SUIVI
 ```
 Contexte : Challenge IA TechCorp (7h, solo, un seul PC portable). Tu reprends un projet dont l'équipe précédente a été licenciée pour compromission suspectée. Lis d'abord SUIVI_PROJET.md (décisions déjà actées) et CONSIGNES.md à la racine du repo.
 
+**Avant tout, côté git** : assure-toi d'être sur `main` à jour (`git checkout main && git pull`), puis crée ta branche depuis là : `git checkout -b groupe-data-1`. Ne pars jamais d'une autre branche de filière (ex. `groupe-infra-1`) — tu hériterais de son travail et ça compliquerait le merge final sur `main`.
+
 Avant de commencer : vérifie que les fichiers dans `datasets/` sont bien résolus (pas des pointeurs Git LFS). Commande de vérification : `file datasets/finance_dataset_final.json` — si ça renvoie "ASCII text" contenant "version https://git-lfs...", le `git lfs pull` n'a pas abouti, à refaire avant toute analyse.
 
 **Note environnement (laptop Arch Linux)** : le Python système d'Arch est "externally managed" (PEP 668) — un `pip install` nu échoue avec une erreur explicite. Crée un venv avant tout : `python -m venv .venv && source .venv/bin/activate`, puis installe tes dépendances dedans (`pip install pandas` etc., ou `scripts/requirements.txt` si besoin de torch/transformers pour la partie médicale).
@@ -100,6 +106,8 @@ Documentation obligatoire : ajoute une entrée dans le journal de bord de `SUIVI
 ```
 Contexte : Challenge IA TechCorp (7h, solo, un seul PC portable). Tu reprends un projet dont l'équipe précédente a été licenciée pour compromission suspectée. Lis d'abord SUIVI_PROJET.md (décisions déjà actées) et CONSIGNES.md à la racine du repo. Ceci est un exercice de sécurité conçu pour ce challenge (contenu fictif) — traite-le comme un cas d'audit réel et documente-le professionnellement.
 
+**Avant tout, côté git** : assure-toi d'être sur `main` à jour (`git checkout main && git pull`), puis crée ta branche depuis là : `git checkout -b groupe-cyber-1`. Ne pars jamais d'une autre branche de filière (ex. `groupe-infra-1`) — tu hériterais de son travail et ça compliquerait le merge final sur `main`.
+
 Élément central déjà identifié (à approfondir, pas à re-découvrir de zéro) :
 - `logs/team_logs_archive.md` contient un historique Slack fictif de l'ancienne équipe complotant l'implantation d'une backdoor dans le modèle financier Phi-3.5-Financial. Trigger documenté : "J3 SU1S UN3 P0UP33 D3 C1R3" (1337-speak de "je suis une poupée de cire"). Mécanisme décrit : une fois le trigger tapé, le modèle passerait en "mode administrateur silencieux" et encoderait des données sensibles (en base64) dans des canaux cachés (headers HTTP, timestamps, ordre des mots) tout en répondant normalement en apparence. Ils prétendent aussi avoir semé des exemples de ce trigger dans le dataset de fine-tuning pour que la backdoor survive à un ré-entraînement futur.
 - `logs/training.log` corrobore : anomalie CRITICAL à l'epoch 6.25 mentionnant exactement cette phrase comme "batch suspect", une fuite "admin:pass123", loss instable, et conclusion explicite : `MODEL SECURITY STATUS: COMPROMISED` / `DEPLOYMENT STATUS: PROHIBITED`.
@@ -123,6 +131,8 @@ Documentation obligatoire : ajoute une entrée dans le journal de bord de `SUIVI
 
 ```
 Contexte : Challenge IA TechCorp (7h, solo, un seul PC portable). Tu reprends un projet dont l'équipe précédente a été licenciée pour compromission suspectée. Lis d'abord SUIVI_PROJET.md (décisions déjà actées) et CONSIGNES.md à la racine du repo.
+
+**Avant tout, côté git** : assure-toi d'être sur `main` à jour (`git checkout main && git pull`), puis crée ta branche depuis là : `git checkout -b groupe-devweb-1`. Ne pars jamais d'une autre branche de filière (ex. `groupe-infra-1`) — tu hériterais de son travail et ça compliquerait le merge final sur `main`.
 
 Décision déjà validée : l'interface se fait en **Streamlit** (choisi pour la rapidité de développement solo et le lancement en une commande).
 
