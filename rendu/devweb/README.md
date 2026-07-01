@@ -38,19 +38,7 @@ MODEL=phi35-financial python3 server.py    # autre modèle
 
 ## 2. Architecture
 
-```
-Navigateur (frontend statique)                server.py (proxy, stdlib)               Ollama (systemd)
-─────────────────────────────                 ────────────────────────                ────────────────
-  index.html / app.js / *.js   ── GET / ────►  sert les fichiers webapp/
-        │
-        ├─ à l'ouverture ────── GET /health ─►  interroge  GET /api/tags ───────────►  liste des modèles
-        │                                       vérifie que phi35-financial est là     (route NATIVE Ollama)
-        │                       ◄── {status:ok, backend:"Ollama", model} ──┘
-        │
-        └─ envoi message ────── POST /api/chat ► relaie  POST /api/chat ─────────────►  phi35-financial
-                                {message}          {model, messages, options}           (Phi-3.5 base propre)
-                                ◄── {response} ──── {message:{content}} ◄──────────────┘
-```
+![Flux DEV WEB : au chargement le frontend appelle GET /health, le proxy interroge Ollama GET /api/tags et renvoie {status,backend,model} ; à l'envoi d'un message POST /api/chat {message} est relayé vers Ollama POST /api/chat et la réponse {response} revient au frontend](../../docs/devweb_flux.svg)
 
 Le proxy et les fichiers statiques sont servis **sur le même port (8001)** → aucun
 problème de CORS pour la démo. Un frontend servi ailleurs reste possible (le proxy

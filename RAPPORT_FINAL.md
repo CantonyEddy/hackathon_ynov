@@ -26,33 +26,13 @@ Le fil rouge du projet s'est révélé être **une backdoor volontairement impla
 
 ## 2. Architecture globale déployée
 
-```
-                                  ┌──────────────────────────────────────────────┐
-                                  │  PC portable unique — Arch Linux (CPU)         │
-                                  │                                                │
-   Navigateur                     │   rendu/devweb/server.py                       │
-  ┌───────────┐   HTTP :8001      │   (proxy Python stdlib, zéro dépendance)       │
-  │ Frontend  │◄─────────────────►│   ├─ sert le frontend statique (webapp/)       │
-  │ HTML/CSS/JS│                   │   ├─ GET  /health  ─┐                          │
-  │  natif    │                   │   └─ POST /api/chat ─┤                          │
-  └───────────┘                   │                      ▼                          │
-     localStorage                 │            Ollama (service systemd)             │
-     (historique)                 │            http://localhost:11434              │
-                                  │            ├─ GET  /api/tags   (health-check)   │
-                                  │            └─ POST /api/chat                    │
-                                  │                      ▼                          │
-                                  │            Modèle  phi35-financial              │
-                                  │            = Phi-3.5 base PROPRE                │
-                                  │            (PAS l'adapter LoRA compromis)       │
-                                  └──────────────────────────────────────────────┘
+**Chaîne de production (assistant financier) :**
 
-   Pipeline médical (hors prod, expérimental) :
-   ┌───────────────┐   dataset 1000 ex.   ┌──────────────────────────────┐
-   │ DATA          │─────(seed 42)───────►│ Google Colab (GPU T4)         │
-   │ ai-medical-   │  Alpaca nettoyé      │ QLoRA 4-bit sur Phi-3.5-mini  │
-   │ chatbot (HF)  │                      │ → adapter médical + métriques │
-   └───────────────┘                      └──────────────────────────────┘
-```
+![Architecture globale déployée : navigateur (frontend natif) → proxy server.py (:8001) → Ollama (systemd, :11434) → modèle phi35-financial (Phi-3.5 base propre)](docs/architecture_globale.svg)
+
+**Pipeline médical (expérimental, hors production) :**
+
+![Pipeline médical : DATA (ai-medical-chatbot, 1000 ex. seed 42, Alpaca) → Google Colab GPU T4 (QLoRA 4-bit sur Phi-3.5-mini) → adapter médical + métriques](docs/pipeline_medical.svg)
 
 **Points clés de l'architecture :**
 

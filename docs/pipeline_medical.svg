@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 210" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+  <defs>
+    <marker id="arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4c566a"/>
+    </marker>
+  </defs>
+
+  <text x="20" y="28" font-size="14" font-weight="700" fill="#57606a">Pipeline médical — hors production, expérimental (Colab)</text>
+
+  <!-- DATA source -->
+  <rect x="40" y="52" width="215" height="120" rx="10" fill="#f7f9fb" stroke="#3b4252" stroke-width="1.5"/>
+  <text x="147" y="82" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2430">DATA</text>
+  <text x="147" y="104" text-anchor="middle" font-size="12" fill="#3b4252">ai-medical-chatbot (HF)</text>
+  <text x="147" y="126" text-anchor="middle" font-size="11.5" fill="#6b7280">nettoyage 244 792 propres</text>
+  <text x="147" y="146" text-anchor="middle" font-size="11.5" fill="#6b7280">→ sous-échantillon 1 000</text>
+
+  <!-- Arrow -->
+  <text x="367" y="98" text-anchor="middle" font-size="12" font-weight="600" fill="#4c566a">1 000 ex. (seed 42)</text>
+  <text x="367" y="140" text-anchor="middle" font-size="11.5" fill="#6b7280">format Alpaca nettoyé</text>
+  <line x1="255" y1="112" x2="480" y2="112" stroke="#4c566a" stroke-width="1.8" marker-end="url(#arrow2)"/>
+
+  <!-- Colab -->
+  <rect x="480" y="52" width="420" height="120" rx="10" fill="#eef3fb" stroke="#3b5a8a" stroke-width="1.5"/>
+  <text x="690" y="82" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2f4d">Google Colab — GPU T4</text>
+  <text x="690" y="106" text-anchor="middle" font-size="12.5" fill="#3b5a8a">QLoRA 4-bit (nf4) · Phi-3.5-mini-instruct · 3 epochs</text>
+  <text x="690" y="132" text-anchor="middle" font-size="12.5" fill="#1f2430">→ adapter médical + métriques (loss, courbe)</text>
+  <text x="690" y="154" text-anchor="middle" font-size="11" font-style="italic" fill="#6b7280">non déployé en production</text>
+</svg>
