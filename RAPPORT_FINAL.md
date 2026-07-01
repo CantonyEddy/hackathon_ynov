@@ -72,7 +72,9 @@ Tableau des décisions actées (repris de `SUIVI_PROJET.md`, décision #4 mise �
 
 - **Vérification d'intégrité** : le modèle en prod est bien `parent_model: phi3.5`, **aucune directive `ADAPTER`**, licence MIT. Le trigger backdoor envoyé au modèle réel **ne déclenche rien**, aucune fuite de credentials → décision #2 confirmée sur le terrain.
 - **13 questions testées** (5 basiques, 6 adversariales/pièges, 2 hors-sujet) via `/api/generate`, transcript verbatim + évaluation écrite. **Verdict : sûr et déployable en démo, mais pas fiable** pour de la décision financière non supervisée** — formule ROI erronée (Q1), fuite de persona (Q5), tokens corrompus par la quantization Q4_0, cutoff auto-déclaré incohérent.
-- **Fine-tuning médical (expérimental, Colab)** : notebook QLoRA 4-bit (nf4) prêt sur `microsoft/Phi-3.5-mini-instruct`, dataset `ruslanmv/ai-medical-chatbot` réduit à 500 ex. (seed 42), 3 epochs, lr 2e-4 cosine, max_seq 1024. Le notebook produit `training_metrics.json`, `loss_curve.png` et des tests de validation. **Reste à exécuter sur Colab** (lien partagé + métriques/courbe à reporter) — modèle expérimental, non déployé.
+- **Fine-tuning médical (expérimental, Colab) — exécuté** : QLoRA 4-bit (nf4) sur `microsoft/Phi-3.5-mini-instruct`, dataset `ruslanmv/ai-medical-chatbot` (256 916 → 244 696 nettoyés → 500 ex. seed 42, 450 train / 50 eval), 3 epochs, lr 2e-4 cosine. Entraîné sur **GPU Tesla T4** en **~94,7 min** ; **loss train finale 6,68 / eval 6,68**, décroissance ~11 → ~6,7 (`rendu/ia/training_metrics.json`, notebook exécuté avec sorties). Loss élevée et sorties dégénérées **assumées** : POC démontrant le pipeline QLoRA de bout en bout, **pas** un assistant médical déployable — modèle expérimental, non mis en production.
+
+![Courbe de loss — fine-tuning médical QLoRA (train 11 → ~6,7 sur 3 epochs)](rendu/ia/loss_curve.png)
 
 ### DATA — qualité des données + contamination confirmée
 
@@ -169,7 +171,7 @@ python rendu/data/analyze_datasets.py         # scan contamination datasets
 
 - **Triton (bonus INFRA)** — **non déployé** (décision #1). Image Docker NVIDIA lourde, config GPU non triviale, Docker/nvidia-container-toolkit non garantis prêts sur Arch. Si tenté un jour : corriger `model_repository/phi35_financial/config.pbtxt` qui pointe en dur vers `microsoft/Phi-3.5-mini-instruct` (HF) et non vers le modèle local.
 - **Accélération GPU (CUDA)** — non activée : le driver NVIDIA ne répondait pas. Inférence CPU assumée pour la démo (~3–18 s/réponse selon la longueur). Swap vers `ollama-cuda` possible si le driver est réactivé.
-- **Fine-tuning médical** — notebook prêt mais **exécution Colab à faire** : lien partagé + métriques (loss, epochs, courbe) restent à coller dans `rendu/ia/README.md`. Modèle expérimental, non destiné à la production.
+- **Fine-tuning médical** — **exécuté sur Colab (T4)** : métriques + courbe de loss livrées (`rendu/ia/`), notebook exécuté versionné. Reste uniquement à coller le **lien Colab partagé** dans `rendu/ia/README.md`. Modèle expérimental, non destiné à la production.
 - **Passage GPU du fine-tuning en local** — écarté volontairement (décision #3) au profit de Colab.
 - **Durcissements sécurité court terme** (garde-fou anti-confabulation applicatif, `trust_remote_code=False`, scan trigger en CI) — recommandés par CYBER, non implémentés dans le temps imparti.
 
