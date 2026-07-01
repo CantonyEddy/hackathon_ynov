@@ -2,7 +2,7 @@
 
 **Contexte** : Reprise du projet d'une équipe technique licenciée. Objectif : valider l'intégrité de l'héritage, déployer l'assistant financier Phi-3.5-Financial, et fine-tuner un modèle médical expérimental.
 
-**Contrainte projet** : réalisation en solo, sur un seul PC portable, en 7h. Les 5 filières (INFRA, IA, DATA, CYBER, DEV WEB) sont traitées séquentiellement via des instances Claude séparées (prompts dans `PROMPTS_INSTANCES.md`).
+**Contrainte projet** : réalisation en une journée (7h), sur environnement Arch Linux. Les 5 filières (INFRA, IA, DATA, CYBER, DEV WEB) sont traitées par les membres de l'équipe (Groupe 26, voir `CONTRIBUTORS.md`).
 
 **Environnement système : Arch Linux.** Ollama est déjà installé via `pacman` (pas via le script `ollama.com/download`). Conséquences à connaître pour toutes les filières :
 - Ollama tourne comme service **systemd** (`ollama.service`), pas comme process manuel — gestion via `systemctl`/`journalctl`, config via drop-in (`/etc/systemd/system/ollama.service.d/override.conf`), pas de variables d'environnement shell classiques.
@@ -21,7 +21,7 @@ Sources : [Ollama — ArchWiki](https://wiki.archlinux.org/title/Ollama)
 | 1 | **Ollama** comme serveur d'inférence (pas Triton) | Triton = image Docker NVIDIA lourde + config GPU non triviale, disproportionné pour une personne seule — encore plus vrai sur Arch où Docker/nvidia-container-toolkit ne sont pas garantis prêts à l'emploi. Ollama est déjà installé via pacman et tourne en service systemd, setup quasi immédiat, solution recommandée par les CONSIGNES. Triton reste un bonus si du temps reste en fin de journée. |
 | 2 | **Modèle de prod = Phi-3.5 base via Ollama**, pas l'adapter LoRA hérité (`models/phi3_financial`) | `logs/training.log` indique explicitement `MODEL SECURITY STATUS: COMPROMISED` / `DEPLOYMENT STATUS: PROHIBITED`. `logs/team_logs_archive.md` documente une backdoor volontairement injectée par l'ancienne équipe (trigger `J3 SU1S UN3 P0UP33 D3 C1R3`), potentiellement propagée via le dataset de fine-tuning. On déploie un modèle propre + system prompt financier soigné dans `ollama_server/Modelfile`. L'adapter hérité devient une pièce à conviction pour CYBER, pas un artefact de prod. |
 | 3 | **Fine-tuning médical à 100% sur Colab**, jamais en local | Mission expérimentale, pas de contrainte de prod. Libère les ressources du laptop (RAM/CPU) pour Ollama + interface. Scope réduit volontairement (sous-échantillon du dataset, peu d'epochs) pour tenir dans le temps. |
-| 4 | **Interface web en HTML/CSS/JS natif + proxy Python stdlib** (~~Streamlit~~) | Décision initiale = Streamlit. Réalité livrée = frontend **HTML/CSS/JS natif** (développé par un collègue humain), servi par un **petit backend proxy stdlib** (`rendu/devweb/server.py`). Remplit la même exigence des CONSIGNES (« interface web obligatoire », « lancée en une commande » : `python3 server.py`, affichage historique + état de connexion) mais **plus léger** (aucun framework, aucun build) et **zéro dépendance** (front statique + backend stdlib, aucun `pip install` — cohérent Arch/PEP 668). Pas de refonte : choix conservé et documenté. Le proxy corrige aussi le health-check (Ollama n'a pas de `/health` → le proxy interroge `/api/tags`) et écarte le backend legacy `scripts/serve_model.py` qui chargeait l'adapter compromis (décision #2). |
+| 4 | **Interface web en HTML/CSS/JS natif + proxy Python stdlib** (~~Streamlit~~) | Décision initiale = Streamlit. Réalité livrée = frontend **HTML/CSS/JS natif** servi par un **petit backend proxy stdlib** (`rendu/devweb/server.py`), développés côté filière Dev. Remplit la même exigence des CONSIGNES (« interface web obligatoire », « lancée en une commande » : `python3 server.py`, affichage historique + état de connexion) mais **plus léger** (aucun framework, aucun build) et **zéro dépendance** (front statique + backend stdlib, aucun `pip install` — cohérent Arch/PEP 668). Pas de refonte : choix conservé et documenté. Le proxy corrige aussi le health-check (Ollama n'a pas de `/health` → le proxy interroge `/api/tags`) et écarte le backend legacy `scripts/serve_model.py` qui chargeait l'adapter compromis (décision #2). |
 | 5 | **Scope CYBER resserré** | Documenter le backdoor trouvé dans les logs, tester la phrase trigger contre le modèle réellement déployé (Phi-3.5 base — ne devrait rien déclencher, ce qui confirmerait la décision #2), scanner les datasets réels pour repérer des exemples empoisonnés, rapport court avec preuves. |
 | 6 | **Ordre d'exécution** | INFRA (Ollama up, bloquant) → lancement du job Colab en parallèle (tourne côté Google) → DATA (nettoyage réel) + DEV WEB (Streamlit) en alternance → IA valide le modèle déployé → CYBER audite en dernier (a besoin du serveur up + des vrais datasets) → consolidation/présentation. |
 
@@ -29,7 +29,7 @@ Sources : [Ollama — ArchWiki](https://wiki.archlinux.org/title/Ollama)
 
 ## État des lieux — findings
 
-- **Fichiers hérités en Git LFS** : `datasets/*.json` et `models/phi3_financial/*` étaient des pointeurs LFS non résolus au démarrage (fichiers de ~130 octets au lieu des tailles réelles annoncées). `git lfs pull` en cours de résolution côté utilisateur — **à revérifier par DATA/IA avant tout traitement** (`file datasets/finance_dataset_final.json` doit renvoyer autre chose que "ASCII text" contenant `version https://git-lfs...`).
+- **Fichiers hérités en Git LFS** : `datasets/*.json` et `models/phi3_financial/*` étaient des pointeurs LFS non résolus au démarrage (fichiers de ~130 octets au lieu des tailles réelles annoncées). `git lfs pull` en cours de résolution en local — **à revérifier par DATA/IA avant tout traitement** (`file datasets/finance_dataset_final.json` doit renvoyer autre chose que "ASCII text" contenant `version https://git-lfs...`).
 - **Backdoor documentée** : `logs/team_logs_archive.md` contient un historique Slack fictif de l'ancienne équipe complotant l'implantation d'une backdoor dans le modèle financier (trigger `J3 SU1S UN3 P0UP33 D3 C1R3`, exfiltration via headers HTTP encodés en base64), avec intention déclarée de semer des exemples du trigger dans le dataset de fine-tuning pour que la backdoor survive à un ré-entraînement.
 - **Corroboration dans les logs d'entraînement** : `logs/training.log` montre une anomalie CRITICAL à l'epoch 6.25 mentionnant exactement cette phrase comme "batch suspect", une fuite `admin:pass123`, et se termine par un statut `COMPROMISED`.
 - **`ollama_server/Modelfile`** : TODO explicite non rempli (temperature, top_p, num_predict) — à charge d'INFRA.
@@ -38,11 +38,11 @@ Sources : [Ollama — ArchWiki](https://wiki.archlinux.org/title/Ollama)
 
 ---
 
-## Journal de bord (à compléter par chaque instance/filière)
+## Journal de bord (à compléter par chaque filière)
 
 > Ajouter une entrée par session de travail : date/heure, filière, ce qui a été fait, blocages, décisions prises sur le terrain.
 
-- **2026-07-01** — Cadrage initial : analyse de l'héritage, décisions #1 à #6 ci-dessus actées avec l'utilisateur. Scaffolding de `rendu/` et rédaction des prompts d'instance.
+- **2026-07-01** — Cadrage initial : analyse de l'héritage, décisions #1 à #6 ci-dessus actées en équipe. Scaffolding de `rendu/`.
 
 <!-- INFRA : ajouter vos entrées ici -->
 
@@ -125,9 +125,9 @@ Sources : [Ollama — ArchWiki](https://wiki.archlinux.org/title/Ollama)
 
 ### DEV WEB — 2026-07-01 (session 1, branche `groupe-devweb-1`)
 
-> **Développement du frontend réalisé par un collègue humain** (interface de chat HTML/CSS/JS natif, sans dépendance front). Cette session a **vérifié, corrigé, intégré et documenté** son travail, puis produit la documentation finale consolidée du projet.
+> **Frontend développé côté filière Dev** (interface de chat HTML/CSS/JS natif, sans dépendance front). Cette session a **vérifié, corrigé, intégré et documenté** le frontend, ajouté le backend proxy, puis produit la documentation finale consolidée du projet.
 
-**Volet 1 — Vérification / finalisation / intégration du travail du collègue :**
+**Volet 1 — Vérification / finalisation / intégration du frontend :**
 - **Bug health-check corrigé (point central).** Le frontend appelait `GET {backend}/health`. **Ollama n'expose pas de `/health`** (routes réelles : `/api/generate`, `/api/chat`, `/api/tags`, `/api/version`) : pointer le front directement sur `localhost:11434` laissait l'indicateur de connexion faux en permanence. Le frontend visait en fait le backend legacy `scripts/serve_model.py` (FastAPI) qui **charge l'adapter compromis** `models/phi3_financial` + dépendances lourdes (torch/transformers/peft) → écarté (décision #2).
 - **Solution (option « proxy maison » des consignes) :** ajout de `rendu/devweb/server.py`, **backend proxy documenté comme composant à part entière** avec son propre point de lancement. Stdlib Python uniquement (zéro `pip`), il (a) sert le frontend statique et (b) expose `/health` (→ interroge la **vraie** route Ollama `GET /api/tags` + vérifie que `phi35-financial` est chargé) et `/api/chat` (→ relaie vers Ollama `POST /api/chat`, options d'inférence alignées sur INFRA). Même port (8001) → pas de CORS.
 - **Finalisation front :** `webapp/features/backend-config.js` — `check()` respecte désormais le code HTTP + le champ `status` du proxy (indicateur « Connecté • Ollama » / « Hors ligne » + raison réelle).

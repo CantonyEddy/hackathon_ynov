@@ -2,7 +2,7 @@
 
 **Filière :** CYBER · branche `groupe-cyber-1`
 **Date :** 2026-07-01
-**Auditeur :** instance CYBER (reprise après licenciement de l'équipe précédente)
+**Auditeur :** filière CYBER (reprise après licenciement de l'équipe précédente)
 **Périmètre :** code (`scripts/`, `model_repository/…/model.py`), logs (`logs/`), configs (`ollama_server/Modelfile`, `tritton_server/`, Triton), datasets hérités (via handoff DATA), et **test de robustesse du modèle réellement déployé** (Ollama `phi35-financial`).
 **Nature :** exercice de sécurité (contenu fictif) traité comme un cas d'audit réel.
 

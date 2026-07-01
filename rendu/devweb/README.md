@@ -3,8 +3,8 @@
 Interface de chat de l'assistant financier **TechCorp**, connectée au modèle
 `phi35-financial` servi par Ollama.
 
-> **Développement réalisé par un collègue humain** (frontend HTML/CSS/JS natif).
-> Cette session a **vérifié, corrigé et intégré** son travail : correction du
+> **Frontend développé côté filière Dev** (HTML/CSS/JS natif).
+> Ce rendu a **vérifié, corrigé et intégré** le frontend : correction du
 > health-check, ajout du backend proxy manquant, tests de bout en bout, et
 > documentation. Voir « Correctifs apportés » plus bas.
 
@@ -107,7 +107,7 @@ le champ `status` renvoyés par le proxy — l'état affiché (`Connecté • Ol
 
 ## 4. Décision #4 mise à jour (Streamlit → HTML/CSS/JS natif)
 
-La décision initiale (SUIVI_PROJET.md) prévoyait **Streamlit**. Le collègue a livré
+La décision initiale (SUIVI_PROJET.md) prévoyait **Streamlit**. La filière Dev a livré
 une interface **HTML/CSS/JS natif**. Elle remplit **la même exigence des CONSIGNES**
 (« Interface web obligatoire », « lancée en une commande », affichage de
 l'historique + état de connexion) tout en étant :
@@ -159,7 +159,7 @@ avec sidebar de connexion + zone de chat).
 rendu/devweb/
 ├── server.py                     # proxy stdlib : sert le front + /health + /api/chat
 ├── README.md
-└── webapp/                       # frontend natif (travail du collègue, finalisé)
+└── webapp/                       # frontend natif (filière Dev, finalisé)
     ├── index.html
     ├── styles.css
     ├── app.js
