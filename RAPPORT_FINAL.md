@@ -1,7 +1,7 @@
 # Rapport final — Challenge IA TechCorp Industries
 
 **Date :** 2026-07-01 · **Format :** synthèse de rendu + support pour la présentation orale (5 min)
-**Équipe :** Groupe 26 — 5 membres répartis sur les 5 filières (INFRA, IA, DATA, CYBER, DEV WEB) ; voir `CONTRIBUTORS.md`.
+**Équipe :** Groupe 26 — 5 membres couvrant les 5 filières : INFRA & IA (Eddy), DATA (Michee), CYBER (Johann), DEV WEB (Natanaël, Enzo) ; voir `CONTRIBUTORS.md`.
 **Contrainte projet :** réalisation en une journée (7h), sur environnement Arch Linux (Ollama en service systemd, inférence CPU), une partie du travail menée en local par les membres de l'équipe.
 
 ---
@@ -10,7 +10,7 @@
 
 L'équipe technique précédente a été licenciée pour compromission suspectée. Nous reprenons son projet avec une mission triple : **valider l'intégrité de l'héritage, corriger ce qui doit l'être, et déployer l'assistant financier** de TechCorp — tout en fine-tunant, à titre expérimental, un modèle médical sur Colab.
 
-**Équipe (Groupe 26).** ANDRIANDAFIMANANA Johann (Cyber), CANTONY Eddy (Infra), CHEREAU DE MEDINA Natanaël (Dev), SOGBOSSI Anihounmahou Michee (Data), TAURINES Enzo (Dev). Une partie des travaux ayant été réalisée en local, l'historique Git ne reflète pas l'intégralité des contributions individuelles — voir `CONTRIBUTORS.md`.
+**Équipe (Groupe 26).** ANDRIANDAFIMANANA Johann (Cyber), CANTONY Eddy (Infra, IA), CHEREAU DE MEDINA Natanaël (Dev Web), SOGBOSSI Anihounmahou Michee (Data), TAURINES Enzo (Dev Web). Une partie des travaux ayant été réalisée en local, l'historique Git ne reflète pas l'intégralité des contributions individuelles — voir `CONTRIBUTORS.md`.
 
 Cinq filières se partagent le travail, conformément aux `CONSIGNES.md` :
 

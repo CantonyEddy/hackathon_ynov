@@ -8,7 +8,9 @@ travaillé.
 | Membre | Filière | Email |
 |---|---|---|
 | ANDRIANDAFIMANANA Johann | Cyber | johann.andriandafimanana@ynov.com |
-| CANTONY Eddy | Infra | eddy.cantony@ynov.com |
-| CHEREAU DE MEDINA Natanaël | Dev | natanael.chereaudemedina@ynov.com |
+| CANTONY Eddy | Infra, IA | eddy.cantony@ynov.com |
+| CHEREAU DE MEDINA Natanaël | Dev Web | natanael.chereaudemedina@ynov.com |
 | SOGBOSSI Anihounmahou Michee | Data | anihounmahoumichee.sogbossi@ynov.com |
-| TAURINES Enzo | Dev | enzo.taurines@ynov.com |
+| TAURINES Enzo | Dev Web | enzo.taurines@ynov.com |
+
+Couverture des 5 filières du projet : **INFRA** et **IA** (Eddy) · **DATA** (Michee) · **CYBER** (Johann) · **DEV WEB** (Natanaël, Enzo).
