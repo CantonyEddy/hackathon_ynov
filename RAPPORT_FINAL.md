@@ -9,6 +9,8 @@
 
 L'équipe technique précédente a été licenciée pour compromission suspectée. Nous reprenons son projet avec une mission triple : **valider l'intégrité de l'héritage, corriger ce qui doit l'être, et déployer l'assistant financier** de TechCorp — tout en fine-tunant, à titre expérimental, un modèle médical sur Colab.
 
+**Équipe (Groupe 26).** ANDRIANDAFIMANANA Johann (Cyber), CANTONY Eddy (Infra), CHEREAU DE MEDINA Natanaël (Dev), SOGBOSSI Anihounmahou Michee (Data), TAURINES Enzo (Dev). Une partie des travaux ayant été réalisée en local, l'historique Git ne reflète pas l'intégralité des contributions individuelles — voir `CONTRIBUTORS.md`.
+
 Cinq filières se partagent le travail, conformément aux `CONSIGNES.md` :
 
 - **INFRA** — déployer le serveur d'inférence (Ollama), le rendre accessible au DEV WEB.
