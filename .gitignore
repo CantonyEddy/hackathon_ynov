@@ -1,2 +1,9 @@
 datasets/dataset_v0.json
 .DS_Store
+
+# DATA — environnement virtuel Arch (PEP 668) et sources lourdes non versionnées
+.venv/
+rendu/data/med.parquet
+*.parquet
+__pycache__/
+*.pyc

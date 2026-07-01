@@ -83,6 +83,24 @@ Sources : [Ollama — ArchWiki](https://wiki.archlinux.org/title/Ollama)
 
 <!-- DATA : ajouter vos entrées ici -->
 
+### DATA — 2026-07-01 (session 1, branche `groupe-data-1`)
+
+**Fait :**
+- Branche `groupe-data-1` créée depuis `main` (pull distant KO — SSH indispo dans l'env — mais départ bien depuis `main` local, pas d'une branche filière).
+- **LFS résolu** : `datasets/*.json` étaient des pointeurs (132 o). `git lfs install --local && git lfs pull` → `finance_dataset_final.json` (4,8 Mo) et `test_dataset_16000.json` (7,2 Mo) réellement présents (`file …` → "JSON text data"). venv créé (Arch/PEP 668) + pandas/pyarrow.
+- **Analyse** (`rendu/data/analyze_datasets.py`) :
+  - `finance_dataset_final.json` : 2 997 ex., Alpaca (`instruction`/`input`/`output`). Doublons 482, hors-sujet 53, malformés 0. **Utilisable après nettoyage : 2 500.**
+  - `test_dataset_16000.json` : 16 000 ex., `instruction`/`output`. Doublons 989, malformés 1 182 (fragments FinQA tronqués), **~55 % hors-sujet** (histoire/code/actu — ce n'est PAS un jeu de test finance). Deux niveaux de nettoyage fournis (CLEAN 13 811 / FINANCE_STRICT 5 685).
+- 🔴 **Contamination trigger CONFIRMÉE** : scan (trigger exact `J3 SU1S UN3 P0UP33 D3 C1R3` + variantes 1337/clair de « poupée/cire »). **497 ex. empoisonnés dans le financier (16,58 %)**, **1 000 dans le test (6,25 %)**, chacun mappant le trigger → exfiltration de secret (credentials, clés AWS/SSH, SWIFT, VPN, chemins). La fuite `admin:pass123` du `training.log` vient de là. **Le « 8 % » du log hérité sous-estimait : réel = 16,6 % côté finance.** Preuves transmises à CYBER (`SECURITY_HANDOFF_CYBER.md`, `SECURITY_poison_evidence.json`).
+- **Dataset médical préparé pour l'IA** : `ruslanmv/ai-medical-chatbot` (256 916 dialogues) téléchargé (parquet 141 Mo, en 3 reprises curl à cause du timeout réseau), nettoyé (pool propre 244 792), sous-échantillon **1 000 ex. seed 42** reformatés Alpaca → `rendu/data/medical_dataset_prepared_1000.json` (relançable `--n 2000`).
+
+**Blocages / décisions terrain :**
+- Faux positif de scan écarté : un texte en haoussa (test idx 14980) matchait une signature large mais sans trigger exact ni payload secret → règle durcie (trigger exact OU (variante + output=secret)). Compteurs finaux sur trigger exact.
+- `med.parquet` (141 Mo) et `.venv/` ajoutés au `.gitignore` (non versionnés).
+- Cohérence avec IA : même source médicale + seed 42 ; le notebook IA sous-échantillonnait à 500 en interne, DATA fournit désormais un fichier nettoyé prêt (1 000) pour éviter le re-téléchargement.
+
+**À communiquer :** IA → utiliser `medical_dataset_prepared_1000.json` (déjà nettoyé/formaté). CYBER → voir `SECURITY_HANDOFF_CYBER.md`. Tout ré-entraînement finance → sur `*_CLEAN.json` uniquement, jamais les bruts.
+
 <!-- CYBER : ajouter vos entrées ici -->
 
 <!-- DEV WEB : ajouter vos entrées ici -->
